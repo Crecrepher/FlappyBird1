@@ -51,6 +51,8 @@ void PFUnitGo::Update(float dt)
 		isJump = true;
 	}
 	Jump(dt);
+
+	sprite.rotate(velocity.y/4000);
 }
 
 void PFUnitGo::Draw(sf::RenderWindow& window)
@@ -69,7 +71,7 @@ void PFUnitGo::Jump(float dt)
 
 void PFUnitGo::CheckBlock(BlockGo* block)
 {
-
+	
 	if (block->blockUp.frect.intersects(sprite.getGlobalBounds()))
 	{
 		isDead = true;

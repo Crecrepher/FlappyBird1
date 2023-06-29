@@ -16,6 +16,7 @@ bestScore(0), speed(0), isPause(true)
 {
 	resources.push_back(std::make_tuple(ResourceTypes::Texture, "graphics/player4.png"));
 	resources.push_back(std::make_tuple(ResourceTypes::Texture, "graphics/rip.png"));
+	resources.push_back(std::make_tuple(ResourceTypes::Texture, "graphics/wall1.png"));
 }
 
 SceneGame::~SceneGame()
@@ -67,7 +68,7 @@ void SceneGame::Enter()
 	findTGo->text.setFillColor(sf::Color::White);
 	Utils::SetOrigin(findTGo->text, Origins::TL);
 	findTGo->text.setPosition(50.f,20.f);
-
+	findTGo->sortLayer = 2;
 
 	findTGo = (TextGo*)FindGo("BestScore");
 	findTGo->text.setFont(*RESOURCE_MGR.GetFont("fonts/DS-DIGI.ttf"));
@@ -77,6 +78,7 @@ void SceneGame::Enter()
 	findTGo->text.setFillColor(sf::Color::White);
 	Utils::SetOrigin(findTGo->text, Origins::BL);
 	findTGo->text.setPosition(50.f, FRAMEWORK.GetWindowSize().y - 100.f);
+	findTGo->sortLayer = 2;
 
 	//위
 	std::string str = "Block0";
@@ -86,7 +88,7 @@ void SceneGame::Enter()
 	findBGo->SetPosition(FRAMEWORK.GetWindowSize().x * 0.5,
 		findBGo->rectangle.getSize().y/2);
 	findBGo->rectangle.setFillColor(sf::Color::White);
-
+	findBGo->sortLayer = 1;
 	//아래
 	str = "Block1";
 	findBGo = (BlockGo*)FindGo(str);
@@ -95,7 +97,7 @@ void SceneGame::Enter()
 	findBGo->SetPosition(FRAMEWORK.GetWindowSize().x * 0.5,
 		FRAMEWORK.GetWindowSize().y -(findBGo->rectangle.getSize().y / 2));
 	findBGo->rectangle.setFillColor(sf::Color::White);
-
+	findBGo->sortLayer = 1;
 	//왼쪽
 	str = "Block2";
 	findBGo = (BlockGo*)FindGo(str);
@@ -104,7 +106,7 @@ void SceneGame::Enter()
 	findBGo->SetPosition(findBGo->rectangle.getSize().x / 2,
 		FRAMEWORK.GetWindowSize().y*0.5);
 	findBGo->rectangle.setFillColor(sf::Color::White);
-
+	findBGo->sortLayer = 1;
 	//오른쪽
 	str = "Block3";
 	findBGo = (BlockGo*)FindGo(str);
@@ -113,6 +115,7 @@ void SceneGame::Enter()
 	findBGo->SetPosition(FRAMEWORK.GetWindowSize().x - (findBGo->rectangle.getSize().x / 2),
 		FRAMEWORK.GetWindowSize().y * 0.5);
 	findBGo->rectangle.setFillColor(sf::Color::White);
+	findBGo->sortLayer = 1;
 
 	//나머지블록들
 	str = "Block4";
@@ -123,6 +126,7 @@ void SceneGame::Enter()
 	findBGo->SetPosition(FRAMEWORK.GetWindowSize().x * 1.2,
 		FRAMEWORK.GetWindowSize().y * (0.05+rand));
 	findBGo->rectangle.setFillColor(sf::Color::White);
+	findBGo->sortLayer = 0;
 
 	str = "Block5";
 	findBGo = (BlockGo*)FindGo(str);
@@ -131,7 +135,7 @@ void SceneGame::Enter()
 	findBGo->SetPosition(FRAMEWORK.GetWindowSize().x * 1.2,
 		FRAMEWORK.GetWindowSize().y * (0.95+rand));
 	findBGo->rectangle.setFillColor(sf::Color::White);
-
+	findBGo->sortLayer = 0;
 
 	str = "Block6";
 	findBGo = (BlockGo*)FindGo(str);
@@ -141,6 +145,7 @@ void SceneGame::Enter()
 	findBGo->SetPosition(FRAMEWORK.GetWindowSize().x * 1.7,
 		FRAMEWORK.GetWindowSize().y * (0.05 + rand));
 	findBGo->rectangle.setFillColor(sf::Color::White);
+	findBGo->sortLayer = 0;
 
 	str = "Block7";
 	findBGo = (BlockGo*)FindGo(str);
@@ -149,16 +154,16 @@ void SceneGame::Enter()
 	findBGo->SetPosition(FRAMEWORK.GetWindowSize().x * 1.7,
 		FRAMEWORK.GetWindowSize().y * (0.95 + rand));
 	findBGo->rectangle.setFillColor(sf::Color::White);
-
+	findBGo->sortLayer = 0;
 
 
 	findBGo = (BlockGo*)FindGo("Block1");
 	PFUnitGo* findPlayer = (PFUnitGo*)FindGo("Player");
 	findPlayer->sprite.setTexture(*RESOURCE_MGR.GetTexture("graphics/player4.png"));
-	findPlayer->SetSize(0.3f, 0.3f);
-	findPlayer->SetOrigin(Origins::BC);
+	findPlayer->SetSize(-0.3f, 0.3f);
+	findPlayer->SetOrigin(Origins::MC);
 	findPlayer->SetPosition(findBGo->GetPosition().x, 
-		findBGo->GetPosition().y /2);
+		findBGo->GetPosition().y *0.6);
 }
 
 void SceneGame::Exit()
@@ -184,12 +189,15 @@ void SceneGame::Update(float dt)
 
 	if (findPlayer->IsDead())
 	{
+		findPlayer->SetSize(0.3f, 0.3f);
+		findPlayer->sprite.setRotation(0);
 		findPlayer->sprite.setTexture(*RESOURCE_MGR.GetTexture("graphics/rip.png"));
 		TextGo* findTGo = (TextGo*)FindGo("Score");
 		findTGo->text.setString("GameOver");
 		findTGo->text.setFillColor(sf::Color::Red);
-		if (INPUT_MGR.GetKey(sf::Keyboard::Space))
+		if (INPUT_MGR.GetKeyDown(sf::Keyboard::Space))
 		{
+			Sleep(300);
 			Enter();
 		}
 		return;
